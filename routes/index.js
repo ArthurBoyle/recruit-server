@@ -49,4 +49,36 @@ router.post("/login", function (req, res) {
   })
 })
 
+//更新用户信息
+router.post("/update", function (req, res) {
+  const userid = req.cookies.userid;
+  if(!userid) {
+    return res.send({code: 2, msg: "请先登录"});
+  }
+  const user = req.body;
+  UserModel.findByIdAndUpdate({_id: userid}, user, function (error, oldUser) {
+    if(!oldUser) {
+      res.clearCookie("userid");
+      res.send({code: 1, msg: "请先登录"});
+    } else {
+      const {username, type, _id} = oldUser;
+      const data = Object.assign({username, type, _id}, user)
+      res.send({code: 0, data})
+    }
+  })
+})
+
+//获取用户信息
+router.get("/user", function (req, res) {
+  const userid = req.cookies.userid;
+  if (!userid) {
+    return res.send({code: 1, msg: "请先登录"})
+  }
+  UserModel.findOne({_id: userid}, filter, function (error, user) {
+    if (user) {
+      res.send({code: 0, data: user})
+    }
+  });
+})
+
 module.exports = router;
