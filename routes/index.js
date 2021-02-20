@@ -81,4 +81,16 @@ router.get("/user", function (req, res) {
   });
 })
 
+//获取用户列表
+router.get("/userlist", function (req, res) {
+  const {type} = req.query;
+  UserModel.find({type}, filter, function (error, users) {
+    if (type !== "boss" && type !== "expert") {
+      res.send({code: 1, msg: "用户类型错误"})
+    } else {
+      res.send({code: 0, data: users})
+    }
+  })
+})
+
 module.exports = router;
